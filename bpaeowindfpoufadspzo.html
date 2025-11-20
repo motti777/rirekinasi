@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bingコマンド（iframe版）</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
+            background-color: white;
+            /* (他のスタイル...) */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: calc(100vh - 40px); /* paddingを考慮 */
+        }
+        /* ★ iframe のスタイル ★ */
+        #content-frame {
+            width: 100%;
+            height: 100vh;
+            border: none;
+            display: none; /* ★最初は隠す★ */
+        }
+    </style>
+</head>
+<body>
+
+    <iframe id="content-frame"></iframe>
+
+    <div class="container" id="message-container">
+        <h1>コマンド待機中...</h1>
+        <p>（入力欄の中では動きません）</p>
+        <hr>
+        <input type="text" placeholder="↑こういう入力欄の中はOK">
+    </div>
+
+    <script>
+        let keyBuffer = "";
+        const messageContainer = document.getElementById('message-container');
+        const contentFrame = document.getElementById('content-frame');
+
+        document.addEventListener('keydown', (e) => {
+            
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                return;
+            }
+            const typedKey = e.key.toLowerCase();
+
+            if (typedKey.length === 1 && typedKey.match(/[a-z]/i)) {
+                keyBuffer += typedKey;
+
+                // (5) 箱の中身に "google" という文字が含まれていたら...
+                if (keyBuffer.includes("google")) {
+                    
+                    // (6) ★★★ アクション実行 ★★★
+                    console.log("'google' と入力されました！ iframe で Bing の表示を試みます...");
+                    
+                    // ★ iframe の中身を Bing にしようと試みる ★
+                    contentFrame.src = "https://www.bing.com/?cc=jp";
+                    
+                    // ★ 元の文字を隠して、iframe を表示する ★
+                    // (たぶん、ここで真っ白な画面が表示される)
+                    messageContainer.style.display = 'none';
+                    contentFrame.style.display = 'block';
+                    
+                    keyBuffer = ""; 
+                }
+
+                // (7) 箱が長くなりすぎないように、後ろの6文字だけ残す
+                if (keyBuffer.length > 6) {
+                    keyBuffer = keyBuffer.slice(-6);
+                }
+            }
+        });
+    </script>
+    </body>
+</html>
